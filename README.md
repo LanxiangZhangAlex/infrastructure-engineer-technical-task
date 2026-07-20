@@ -1,5 +1,7 @@
 # Cloud Infrastructure Engineer Portfolio
 
+[![CI](https://github.com/LanxiangZhangAlex/infrastructure-engineer-technical-task/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/LanxiangZhangAlex/infrastructure-engineer-technical-task/actions/workflows/ci-cd.yml)
+
 A take-home project demonstrating how I package a TypeScript service, validate it in CI, and define a production-oriented Google Cloud deployment with Kubernetes and infrastructure as code.
 
 > Portfolio note: this repository is a technical exercise, not a live production system. Deploying it requires your own Google Cloud project and credentials.

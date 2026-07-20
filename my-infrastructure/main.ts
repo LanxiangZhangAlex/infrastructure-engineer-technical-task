@@ -1,4 +1,4 @@
-import { App, TerraformStack } from 'cdktf';
+import { App, TerraformStack, TerraformVariable } from 'cdktf';
 import { GoogleProvider } from '@cdktf/provider-google/lib/provider';
 import { SqlDatabaseInstance } from '@cdktf/provider-google/lib/sql-database-instance';
 import { SqlDatabase } from '@cdktf/provider-google/lib/sql-database';
@@ -9,10 +9,21 @@ class MyStack extends TerraformStack {
   constructor(app: App, id: string) {
     super(app, id);
 
+    const projectId = new TerraformVariable(this, 'project_id', {
+      type: 'string',
+      description: 'Google Cloud project ID',
+    });
+
+    const databasePassword = new TerraformVariable(this, 'database_password', {
+      type: 'string',
+      description: 'Cloud SQL application user password',
+      sensitive: true,
+    });
+
     // Configure the Google provider
     new GoogleProvider(this, 'Google', {
-      project: 'future-nuance-435407-c6',
-      region: 'europe-north1', 
+      project: projectId.stringValue,
+      region: 'europe-central2',
     });
 
     // Create a Cloud SQL instance
@@ -23,17 +34,7 @@ class MyStack extends TerraformStack {
       settings: {
         tier: 'db-f1-micro', 
         ipConfiguration: {
-          authorizedNetworks: [
-            {
-              name: 'VPN Access 1',
-              value: '10.26.32.12/32', 
-            },
-            {
-              name: 'VPN Access 2',
-              value: '19.104.105.29/32', 
-            },
-          ],
-          ipv4Enabled: true,
+          ipv4Enabled: false,
         },
       },
     });
@@ -48,7 +49,7 @@ class MyStack extends TerraformStack {
     new SqlUser(this, 'my-sql-user', {
       name: 'myuser', 
       instance: sqlInstance.name,
-      password: 'mypassword', 
+      password: databasePassword.stringValue,
     });
 
     // Create a GKE cluster

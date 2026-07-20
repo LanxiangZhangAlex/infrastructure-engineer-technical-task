@@ -9,6 +9,7 @@
       "es2018"
     ],
     "module": "CommonJS",
+    "outDir": "dist",
     "noEmitOnError": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
@@ -25,8 +26,7 @@
     "incremental": true,
     "skipLibCheck": true,
     "typeRoots": [
-      "./node_modules/@types",
-      "./node_modules"  
+      "./node_modules/@types"
     ]
   },
   "include": [

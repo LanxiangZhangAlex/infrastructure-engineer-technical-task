@@ -1,60 +1,89 @@
-# Cloud Infrastructure Engineer
-## Take-home technical assessment
+# Cloud Infrastructure Engineer Portfolio
 
-## Introduction
-The purpose of this assessment is for **sisu-tech** to ascertain the technical suitability of candidates applying for a Cloud Infrastructure Engineer position.
+A take-home project demonstrating how I package a TypeScript service, validate it in CI, and define a production-oriented Google Cloud deployment with Kubernetes and infrastructure as code.
 
-Please note the following:
+> Portfolio note: this repository is a technical exercise, not a live production system. Deploying it requires your own Google Cloud project and credentials.
 
- - We do not expect this test to take more than 2 hours
- - We recommend to create a new account in Google Cloud Platform (GCP) for testing the results.
+## What this project demonstrates
 
-## Process
+- Containerizing a TypeScript application with Docker
+- Automated build and validation with GitHub Actions
+- Kubernetes Deployment and Service manifests
+- Google Kubernetes Engine (GKE) and Cloud SQL infrastructure with CDK for Terraform
+- Infrastructure tests and a clear path from source code to deployment
 
- 1. Complete the tasks listed below
- 2. Edit this `README.md` file to include brief answers to the questions about the assessment listed below
- 3. Push your work to your new repository
- 4. Send your recruitment contact a link to the new repository
+## Architecture
 
-If you have any questions about this process, please speak to your recruitment contact.
+```mermaid
+flowchart LR
+    Dev[Developer] --> GH[GitHub repository]
+    GH --> CI[GitHub Actions]
+    CI --> IMG[Container image]
+    IMG --> GKE[GKE workload]
+    GKE --> SQL[(Cloud SQL)]
+    CDKTF[CDKTF configuration] --> GKE
+    CDKTF --> SQL
+```
 
-## Tasks
+## Repository layout
 
-### 1. Docker
-A basic TypeScript application has been created in the `application` folder. Create a Dockerfile to build this application, making sure that it runs on your local device.
+| Path | Purpose |
+| --- | --- |
+| `application/` | TypeScript service and Dockerfile |
+| `.github/workflows/ci-cd.yml` | CI/CD workflow |
+| `kubernetes/` | Kubernetes Deployment and Service |
+| `my-infrastructure/` | CDKTF infrastructure definitions and tests |
 
-### 2. CI/CD
- - :arrow_forward: Github Actions
- - :arrow_forward: Argo Workflows
+## Prerequisites
 
-Write a YAML-based or Kubernetes-based CI/CD pipeline to build, push and deploy this docker image to some Google Kubernetes Engine cluster.
+- Node.js and npm
+- Docker
+- kubectl
+- Google Cloud SDK
+- Terraform and CDKTF
+- A Google Cloud project with billing and the required APIs enabled
 
-Create Kubernetes resource definitions needed to deploy the application and include it in the `kubernetes` folder.
+## Quick start
 
-Use whatever mechanism/tools you think are appropriate/relevant to deploy the application.
+### Run the application locally
 
-NOTE: This pipeline does not have to be fully active. All we're looking for is the YAML file. Minor syntax errors will be overlooked.
+```bash
+cd application
+npm install
+npm run build
+npm start
+```
 
-### 3. Infrastructure as Code
- - :arrow_forward: Terraform **CDK in TypeScript** https://developer.hashicorp.com/terraform/cdktf
+### Build and run the container
 
-Create some Infrastructure as Code resources to deploy an Google Cloud Kubernetes Engine and an Cloud SQL database to some Google Cloud account.
+```bash
+docker build -t infrastructure-task ./application
+docker run --rm -p 3000:3000 infrastructure-task
+```
 
-The Google Cloud Kubernetes Engine must be able to connect to Google Cloud SQL, and the Kubernetes Cluster will need to be accessed as follows:
- - VPN from IPs `10.26.32.12` and `19.104.105.29`
- - HTTPS traffic from anywhere
+### Validate the infrastructure
 
-Consider other general security best practices.
+```bash
+cd my-infrastructure
+npm install
+npm test
+npx cdktf synth
+```
 
-Other configuration can be decided by yourself, based on the instance being used for a low resource usage, low traffic web application.
+Review the generated Terraform plan before applying it. Cloud deployment creates billable resources.
 
-## Questions
+## Design decisions
 
- 1. How long did you spend on this assessment in total?\
- _Approximately 2 hours, including research and implementation._
+- **Managed Kubernetes:** GKE reduces control-plane operational overhead.
+- **Managed database:** Cloud SQL provides backups, patching, and high-availability options.
+- **Infrastructure as code:** CDKTF keeps infrastructure definitions reviewable and repeatable in TypeScript.
+- **Separate Kubernetes manifests:** workload configuration remains visible and independently auditable.
+- **Automated validation:** CI catches application, container, and infrastructure regressions early.
 
- 2. What was the most difficult task?\
- _The most challenging task was setting up the CI/CD pipeline with Argo Workflows, as it required a deep understanding of both Kubernetes and the specific configurations needed for deployment._
+## Production hardening
 
- 3. If you had an unlimited amount of time to complete this task, what would you have done differently?\
- _I would have implemented more comprehensive testing for the application and the CI/CD pipeline, as well as explored additional security measures for the infrastructure._
+Before production use, I would add workload identity, Secret Manager integration, least-privilege IAM, image vulnerability scanning, policy checks, environment-specific state, observability, autoscaling, network policies, database private connectivity, backup validation, and a documented rollback procedure.
+
+## Skills demonstrated
+
+Docker · Kubernetes · GCP · GKE · Cloud SQL · Terraform/CDKTF · GitHub Actions · TypeScript · CI/CD

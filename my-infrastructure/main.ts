@@ -5,7 +5,7 @@ import { SqlDatabase } from '@cdktf/provider-google/lib/sql-database';
 import { SqlUser } from '@cdktf/provider-google/lib/sql-user';
 import { ContainerCluster } from '@cdktf/provider-google/lib/container-cluster';
 
-class MyStack extends TerraformStack {
+export class MyStack extends TerraformStack {
   constructor(app: App, id: string) {
     super(app, id);
 
@@ -64,6 +64,12 @@ class MyStack extends TerraformStack {
   }
 }
 
-const app = new App();
-new MyStack(app, 'my-infrastructure');
-app.synth();
+export function createApp(): App {
+  const app = new App();
+  new MyStack(app, 'my-infrastructure');
+  return app;
+}
+
+if (require.main === module) {
+  createApp().synth();
+}

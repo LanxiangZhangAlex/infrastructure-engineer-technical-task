@@ -1,5 +1,9 @@
 import { App, TerraformStack } from 'cdktf';
-import { GoogleProvider } from '@cdktf/provider-google/google-provider'; 
+import { GoogleProvider } from '@cdktf/provider-google/lib/provider';
+import { SqlDatabaseInstance } from '@cdktf/provider-google/lib/sql-database-instance';
+import { SqlDatabase } from '@cdktf/provider-google/lib/sql-database';
+import { SqlUser } from '@cdktf/provider-google/lib/sql-user';
+import { ContainerCluster } from '@cdktf/provider-google/lib/container-cluster';
 
 class MyStack extends TerraformStack {
   constructor(app: App, id: string) {
@@ -12,7 +16,7 @@ class MyStack extends TerraformStack {
     });
 
     // Create a Cloud SQL instance
-    const sqlInstance = new google_sql_database_instance(this, 'my-sql-instance', {
+    const sqlInstance = new SqlDatabaseInstance(this, 'my-sql-instance', {
       name: 'my-sql-instance',
       databaseVersion: 'MYSQL_5_7', 
       region: 'europe-central2', 
@@ -35,22 +39,22 @@ class MyStack extends TerraformStack {
     });
 
     // Create a database in the Cloud SQL instance
-    new google_sql_database(this, 'my-database', {
+    new SqlDatabase(this, 'my-database', {
       name: 'mydatabase', 
       instance: sqlInstance.name,
     });
 
     // Create a Cloud SQL user
-    new google_sql_user(this, 'my-sql-user', {
+    new SqlUser(this, 'my-sql-user', {
       name: 'myuser', 
       instance: sqlInstance.name,
       password: 'mypassword', 
     });
 
     // Create a GKE cluster
-    const cluster = new google_container_cluster(this, 'my-gke-cluster', {
+    new ContainerCluster(this, 'my-gke-cluster', {
       name: 'my-gke-cluster',
-      location: 'eeurope-central2', 
+      location: 'europe-central2', 
       initialNodeCount: 1,
       nodeConfig: {
         machineType: 'e2-micro', // Choose a machine type based on your needs
